@@ -1,0 +1,79 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [Master]
+  workflow_dispatch:
+
+concurrency:
+  group: rslivetech-landingpage-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy dist to server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_TARGET: ${{ secrets.SSH_TARGET }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          for name in SSH_HOST SSH_USER SSH_KEY SSH_TARGET SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "Required GitHub Actions secret is missing: ${name}"
+              exit 1
+            fi
+          done
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # Normalize CRLF in case the multiline secret was copied from a Windows editor.
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Fail here with a clear message if the secret is truncated, malformed, or encrypted.
+          if ! ssh-keygen -y -P '' -f ~/.ssh/deploy_key >/dev/null 2>&1; then
+            echo "SSH_KEY is not a readable unencrypted OpenSSH private key. Recreate the GitHub secret from the complete private-key file."
+            exit 1
+          fi
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          SSH_CMD="ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          REMOTE="${SSH_USER}@${SSH_HOST}"
+
+          # Require an existing absolute target directory to avoid creating or syncing an
+          # unintended path. Resolve it remotely, then rsync dist contents into that directory.
+          case "$SSH_TARGET" in
+            /*) ;;
+            *) echo "SSH_TARGET must be an absolute server path"; exit 1 ;;
+          esac
+          if [ "$SSH_TARGET" = "/" ]; then
+            echo "SSH_TARGET cannot be the server root directory"
+            exit 1
+          fi
+          printf -v QUOTED_TARGET '%q' "$SSH_TARGET"
+          RESOLVED_TARGET=$(ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes "$REMOTE" \
+            "test -d $QUOTED_TARGET && cd -- $QUOTED_TARGET && pwd -P")
+
+          rsync -rltvzO --delete-delay --delay-updates \
+            -e "$SSH_CMD" \
+            dist/ "$REMOTE:$RESOLVED_TARGET/"

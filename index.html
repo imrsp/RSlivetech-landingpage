@@ -3,113 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="RS Live Technologies creates image, signal, and systems for living experiences."
-    />
-    <title>RS Live Technologies</title>
+    <meta name="description" content="RS Live Technologies designs signal, mixing, and sound systems for live experiences, from clock to the room." />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#10100e" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="RS Live Technologies" />
+    <meta property="og:title" content="RS Live Technologies - We make lives." />
+    <meta property="og:description" content="Signal, mixing, and systems for live sound." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="RS Live Technologies - We make lives." />
+    <meta name="twitter:description" content="Signal, mixing, and systems for live sound." />
+    <title>RS Live Technologies - We make lives.</title>
+    <link rel="icon" type="image/svg+xml" href="./src/assets/rs-monogram.svg" />
+    <link rel="preload" as="image" href="./src/assets/stadium-hero-v2.png" fetchpriority="high" />
     <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
-    <header class="site-header" aria-label="Site header">
-      <a class="brand" href="#top" aria-label="RS Live Technologies home">
-        <span>RS Live Technologies</span>
-      </a>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" data-header>
+      <a class="brand" href="#top" aria-label="RS Live Technologies home">RS Live Technologies</a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="#work">Work</a>
-        <a href="#approach">Approach</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#work">Work</a><a href="#approach">Approach</a><a href="#contact">Contact</a>
       </nav>
     </header>
 
-    <main>
+    <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <h1 id="hero-title">We make lives.</h1>
-          <p>Image, signal, and systems for living experiences.</p>
-        </div>
-        <figure class="hero-media" aria-label="Atmospheric live technology scene">
-          <img
-            src="./src/assets/hero-control-room.png"
-            alt="Monochrome live production control room with light and haze"
-            width="1672"
-            height="941"
-            loading="eager"
-            decoding="async"
-          />
+        <figure class="hero__media" data-reveal>
+          <picture>
+            <img src="./src/assets/stadium-hero-v2.png" width="1502" height="1047" alt="A line-array loudspeaker faces a packed stadium while measured sound fields travel across the audience toward front of house." fetchpriority="high" decoding="async" />
+          </picture>
         </figure>
-        <div class="hero-rail" aria-hidden="true"></div>
+        <div class="hero__copy" data-reveal>
+          <h1 id="hero-title"><span>We make</span><span>lives.</span></h1>
+          <p>Signal, mixing, and systems<br />for living experiences.</p>
+          <a class="text-link" href="#contact"><span>Start a conversation</span><svg viewBox="0 0 52 14" aria-hidden="true"><path d="M1 7h48M43 1l6 6-6 6" /></svg></a>
+        </div>
       </section>
 
-      <section class="trio-band" id="work" aria-label="Visual rhythm">
-        <figure class="card-trio card-trio-left">
-          <img
-            src="./src/assets/light-studies.png"
-            alt="Monochrome stage light studies with beams and haze"
-            loading="lazy"
-            style="object-position: 50% 18%"
-          />
-          <figcaption>Light studies</figcaption>
+      <section class="workflow section" id="work" aria-labelledby="workflow-title">
+        <div class="section-heading" data-reveal>
+          <h2 id="workflow-title">One continuous path.</h2>
+          <p>From clock to room, every layer is designed to hold together.</p>
+        </div>
+        <figure class="workflow__visual media-window" data-reveal>
+          <picture>
+            <img src="./src/assets/continuous-path-v2.png" width="1403" height="1121" alt="A continuous path linking system clocking and redundant transport to live mixing, loudspeaker coverage, and audience measurement." loading="lazy" decoding="async" />
+          </picture>
         </figure>
-        <figure class="card-trio card-trio-center">
-          <img
-            src="./src/assets/switcher-hands.png"
-            alt="Monochrome close-up of live switching hands at a control desk"
-            loading="lazy"
-            style="object-position: 52% 50%"
-          />
-          <figcaption>Signals in motion</figcaption>
-        </figure>
-        <figure class="card-trio card-trio-right">
-          <img
-            src="./src/assets/installation-space.png"
-            alt="Monochrome installation space with suspended screens and small figures"
-            loading="lazy"
-            style="object-position: 52% 46%"
-          />
-          <figcaption>Human scale</figcaption>
-        </figure>
+        <div class="workflow__stages" aria-label="Signal, Mixing, System workflow">
+          <article data-reveal><h3>Signal</h3><span aria-hidden="true"></span><p>We design clocking, redundancy,<br />and networked audio transport.</p></article>
+          <article data-reveal><h3>Mixing</h3><span aria-hidden="true"></span><p>We shape live sound,<br />with clarity and intent.</p></article>
+          <article data-reveal><h3>System</h3><span aria-hidden="true"></span><p>We model, measure,<br />and tune for the room.</p></article>
+        </div>
       </section>
 
-      <section class="moments" id="approach" aria-labelledby="moments-title">
-        <div class="moments-head">
-          <h2 id="moments-title">Selected moments</h2>
+      <section class="approach section" id="approach" aria-labelledby="approach-title">
+        <div class="section-heading section-heading--compact" data-reveal>
+          <h2 id="approach-title">Tell us what the<br />space demands.</h2>
+          <p>From theatres made to endure to live productions built for one night, we bring architecture, people, and delivery together&mdash;resilient signal and network foundations, trusted mixing, complete sound systems, and work shaped entirely to the brief.</p>
         </div>
-        <div class="moments-grid">
-          <figure class="card-selected card-selected-left">
-            <img
-              src="./src/assets/light-studies.png"
-              alt="Monochrome concert-scale light field with a silhouetted figure"
-              loading="lazy"
-              style="object-position: 48% 26%"
-            />
-          </figure>
-          <figure class="card-selected card-selected-center">
-            <img
-              src="./src/assets/hero-control-room.png"
-              alt="Monochrome live production control room facing a large stage"
-              loading="lazy"
-              style="object-position: 52% 54%"
-            />
-          </figure>
-          <figure class="card-selected card-selected-right">
-            <img
-              src="./src/assets/installation-space.png"
-              alt="Monochrome installation hall with large vertical screens"
-              loading="lazy"
-              style="object-position: 56% 46%"
-            />
-          </figure>
-        </div>
+        <figure class="approach__visual media-window" data-reveal>
+          <picture>
+            <img src="./src/assets/measurement-field-v2.png" width="1501" height="1047" alt="Five measurement positions in a stadium combine into several distinct, nearly flat response traces." loading="lazy" decoding="async" />
+          </picture>
+        </figure>
+        <div class="principles" data-reveal aria-label="Working principles"><div><span aria-hidden="true"></span><p>Coherence</p></div><div><span aria-hidden="true"></span><p>Resilience</p></div><div><span aria-hidden="true"></span><p>Translation</p></div></div>
       </section>
+
+      <section class="contact" id="contact" aria-label="Contact"><a href="mailto:livetech@rsp.ink"><svg viewBox="0 0 58 18" aria-hidden="true"><path d="M1 9h53M46 1l8 8-8 8" /></svg><span>livetech@rsp.ink</span></a></section>
     </main>
-
-    <footer class="site-footer" id="contact">
-      <p>RS Live Technologies</p>
-      <a href="mailto:studio@rslivetech.com">studio@rslivetech.com</a>
-    </footer>
-
-    <span class="sr-only" id="about">About RS Live Technologies.</span>
+    <footer class="site-footer"><p>RS Live Technologies</p><a class="monogram" href="#top" aria-label="Back to top"><img src="./src/assets/rs-monogram.svg" alt="" aria-hidden="true" /></a></footer>
+    <script defer src="./src/main.js"></script>
   </body>
 </html>

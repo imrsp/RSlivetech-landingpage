@@ -1,106 +1,161 @@
 # AGENTS.md
 
-This file is for future coding agents and maintainers working inside this repository.
+This file defines the current maintenance contract for coding agents and contributors working in this repository.
+
+## Working Documentation
+
+- Keep `AGENTS.md` local and ignored by Git; it records maintenance guidance for this checkout.
+- Put future project communications and technical documentation in `/docs` by default. The `/docs` directory is ignored by Git and is not part of the public repository.
+- Keep the root `README.MD` very brief and suitable for a public repository; do not put technical details there.
 
 ## Objective
 
-Maintain and evolve a small, premium, single-page landing page for `RS Live Technologies`.
+Maintain a small, premium, single-page brand site for `RS Live Technologies`.
 
-The current site is not a general marketing template. It is deliberately restrained, image-led, and editorial. Any change that pushes it toward a generic SaaS or agency landing page is probably the wrong move unless the user explicitly changes the brief.
+The site presents large-format live sound work as one continuous path:
 
-## Repo Reality
+`Signal → Mixing → System`
 
-- Framework: `React + Vite + TypeScript`
-- Main code lives in `src/main.tsx` and `src/styles.css`
-- There is no router, no state library, and no component library
-- The app is intentionally small; do not over-architect it
-- Generated output lives in `dist/`
-- Image assets live in `src/assets/`
+It is not a generic agency, SaaS, equipment catalogue, or conventional services page. Preserve its editorial restraint unless the user explicitly changes the brief.
+
+## Repository Reality
+
+- Runtime: semantic HTML, handwritten CSS, native JavaScript, high-resolution raster illustrations, and small inline SVG icons
+- Tooling: zero-dependency Node.js scripts
+- Entry point and all visible copy: `index.html`
+- Visual system and responsive behavior: `src/styles.css`
+- Runtime behavior: `src/main.js`
+- Generated output: `dist/`
+- Both source and built `index.html` must work when opened directly through `file://`
+- No React, Vite, TypeScript, router, state library, component library, CMS, or third-party runtime dependency
+- Node.js requirement: `>=18.17`
+
+The app is intentionally small. Do not over-architect it.
 
 ## Commands
 
-Install:
-
-```bash
-npm install
-```
-
-Run dev server:
-
-```bash
-npm run dev
-```
-
-Build:
+No dependency installation is required.
 
 ```bash
 npm run build
-```
-
-Preview production output:
-
-```bash
+npm run dev
 npm run preview
 ```
 
-## Architectural Guidance
+`npm run preview` serves `dist/` at port `4173` by default. `HOST` and `PORT` may be overridden through environment variables.
 
-- Keep `src/main.tsx` as composition glue for a few small page sections.
-- If the page grows, split sections into local component files under `src/`, but do it only when the split reduces real complexity.
-- Keep styling centralized or at least token-driven. If you add new files, preserve the existing custom property system for color, spacing, width, and motion.
-- Do not introduce a heavy UI library for this project unless the user explicitly asks for it.
-- Do not add client-side data plumbing, CMS abstractions, or routing scaffolding without a concrete use case.
+Directly opening either root `index.html` or `dist/index.html` must remain a supported runtime path. HTTP preview is for development convenience, not a runtime requirement.
 
-## Design Constraints
+If recursive file watching fails with `EMFILE`, run `npm run build` followed by `npm run preview`; do not treat the operating-system watch limit as an application failure.
 
-- Preserve the monochrome editorial direction unless the brief changes.
-- The page should remain photography-dominant.
-- Copy stays minimal. Avoid filler sections, fake testimonials, metrics, service cards, and decorative UI clutter.
-- Motion should remain quiet: slow reveal, gentle drift, subtle hover states.
-- Maintain a premium feel on mobile, not just desktop.
+## Page Composition
+
+The current navigation has exactly three destinations:
+
+- `Work`
+- `Approach`
+- `Contact`
+
+The page sequence is:
+
+1. Fixed header
+2. Hero with `We make lives.` and the stadium sound illustration
+3. `One continuous path.` workflow
+4. Working approach and multi-position response illustration
+5. Contact band
+6. Minimal footer
+
+Do not add a separate About page, modal system, gallery, service-card grid, or additional navigation item without a concrete new requirement.
+
+## Design Contract
+
+- Preserve the warm near-black paper background, ivory hierarchy, and restrained terracotta accent.
+- Preserve the dark Claude-inspired editorial character without copying Claude product UI literally.
+- Keep the balance of large serif display type and quiet sans-serif interface text.
+- The three production visuals are high-resolution PNG illustrations derived from the approved effect images. Keep visible copy and controls code-native.
+- Illustrations should be legible, technically plausible, and restrained rather than obscurely abstract.
+- The hero should communicate the energy and scale of a stadium show without neon, beams, screens, gradients, or spectacle for its own sake.
+- Loudspeaker arrays must face the audience and sound-field geometry must read coherently.
+- Final response traces should be broadly flat but imperfect, with visible variation between measurement positions.
+- Motion must remain subtle and support hierarchy; do not animate the raster artwork merely to add activity.
+- Maintain a premium first view and equal care on mobile.
 - Respect `prefers-reduced-motion`.
 
-## Content Constraints
+## Content Contract
 
-Current visible content is intentionally sparse:
+Keep these elements unless the user explicitly changes them:
 
 - Brand: `RS Live Technologies`
 - Slogan: `We make lives.`
-- Brand line: `Image, signal, and systems for living experiences.`
-- Visual rhythm section and three selected moments
-- Contact path via `mailto:studio@rslivetech.com`
+- Brand line: `Signal, mixing, and systems for living experiences.`
+- Workflow: `Signal → Mixing → System`
+- Contact: `studio@rslive.tech`
 
-Do not expand this into a conventional services page unless explicitly asked.
+The workflow is one complete path, not “3 ways” and not three unrelated offerings.
 
-## Asset Guidance
+Content concerns sound design only. Do not mention lighting or use lighting and large-format screens as visual themes. Keep technical meaning present but abstract: avoid turning clocking, redundancy, AoIP, protocol coordination, acoustical modelling, measurement, and tuning into a dense specification list unless requested.
 
-- Existing images are local generated PNGs in `src/assets/`.
-- `concept-direction.png` is a reference artifact, not a runtime dependency.
-- If replacing or adding hero/gallery imagery, keep the same tonal family: monochrome, haze, stage/control/installation atmosphere, high-quality editorial framing.
-- Prefer optimized modern formats for new production assets when practical.
+Avoid filler sections, invented claims, testimonials, metrics, client logos, pricing, FAQ blocks, badges, or marketing jargon.
+
+## Architectural Guidance
+
+- Keep page structure and image references in `index.html` while the site remains this small.
+- Keep styling centralized and token-driven in `src/styles.css`.
+- Keep `src/main.js` limited to behavior that CSS and semantic HTML cannot provide cleanly.
+- Keep browser runtime JavaScript as a classic deferred script. Do not introduce ES module loading, runtime fetches, root-relative asset paths, or server-only assumptions without preserving direct `file://` execution.
+- Prefer HTML anchors and native browser behavior over custom navigation code.
+- Reuse the existing media-window, spacing, typography, and responsive primitives before creating one-off styles.
+- Keep production image assets under `src/assets/`; do not reference files from generated-image or temporary directories.
+- If the page genuinely grows, split by meaningful responsibility only after the split reduces complexity.
+- Do not introduce dependencies, routing, data plumbing, or abstraction layers without a concrete use case.
+
+## Accessibility
+
+- Preserve the skip link and semantic landmark structure.
+- Keep heading order coherent and anchor IDs stable.
+- Give informative production images concise, meaningful `alt` text.
+- Mark decorative inline SVG icons `aria-hidden="true"`.
+- Preserve visible keyboard focus and sufficient contrast.
+- Never make content visibility depend permanently on JavaScript or animation.
+
+## Build Behavior
+
+`scripts/build.mjs` checks `file://` compatibility and local references, recreates `dist/`, writes root HTML with 12-character SHA-256 fingerprints on CSS, JS, and image resources, omits PNG masters when JPEG derivatives exist, and copies `_headers`. Treat source files as authoritative and never edit `dist/` directly.
+
+`scripts/dev.mjs` builds, starts the server, and watches `index.html` plus `src/`. `scripts/serve.mjs` revalidates HTML, applies immutable caching to fingerprinted files, returns true 404s, limits methods to GET/HEAD, rejects traversal, and sends baseline security headers. `_headers` carries the corresponding production policy for Netlify and Cloudflare Pages.
 
 ## Verification Standard
 
-For any visible UI change:
+For every visible UI change:
 
 1. Run `npm run build`.
-2. Verify in browser, not just by static inspection.
-3. Check desktop and mobile.
-4. Confirm there is no horizontal overflow.
-5. Confirm image crops, text wrapping, and fixed header behavior still hold up.
-6. Preserve the first-view composition: slogan, hero image, and a visible hint of the next section.
+2. Run `git diff --check`.
+3. Verify the built site in a browser.
+4. Check desktop and mobile viewports.
+5. Confirm there is no horizontal overflow.
+6. Confirm the fixed header and all three navigation anchors work.
+7. Confirm image crops, loudspeaker direction, asset sharpness, and text wrapping remain correct.
+8. Confirm the console has no errors or warnings.
+9. Confirm the reduced-motion experience remains complete.
+10. Confirm both root `index.html` and `dist/index.html` remain directly openable through `file://` with working Header state and local assets.
 
-## Things To Avoid
+Preserve unrelated worktree changes and report any environmental limitation separately from application failures.
 
-- Adding unnecessary dependencies
-- Turning the page into a card-heavy template
-- Introducing bright accent colors without a new brief
-- Replacing the layout with generic centered marketing blocks
-- Breaking the balance between large type and large imagery
-- Treating `dist/` as source of truth
+## Things to Avoid
 
-## Source Of Truth
+- Generic centered marketing blocks or card-heavy templates
+- Bright or numerous accent colors
+- Photos, video backgrounds, equipment glamour shots, lighting beams, or screen walls
+- Excessive parallax, hover effects, scroll choreography, or looping animation
+- Copy that over-explains the technical workflow
+- Editing generated `dist/` as source
+- Adding dependencies for behavior already covered by the platform
 
-- Composition and copy: [src/main.tsx](/Users/imrsp/Documents/Codex/RSlivetech-landingpage/src/main.tsx)
-- Visual system and responsive behavior: [src/styles.css](/Users/imrsp/Documents/Codex/RSlivetech-landingpage/src/styles.css)
-- Runtime scripts and package metadata: [package.json](/Users/imrsp/Documents/Codex/RSlivetech-landingpage/package.json)
+## Source of Truth
+
+- Composition, copy, semantics, and image references: [index.html](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/index.html)
+- Visual system, motion, and responsive behavior: [src/styles.css](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/src/styles.css)
+- Runtime behavior: [src/main.js](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/src/main.js)
+- Build and runtime metadata: [package.json](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/package.json)
+- Architecture notes: [docs/architecture.md](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/docs/architecture.md)
+- Naming conventions: [docs/naming-conventions.md](/Users/imrsp/Documents/GitHub/RSlivetech-landingpage-2/docs/naming-conventions.md)

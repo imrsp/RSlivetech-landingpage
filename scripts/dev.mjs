@@ -3,11 +3,11 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-const root = process.cwd();
-const buildModule = path.join(root, "scripts", "build.mjs");
+const projectRoot = process.cwd();
+const buildScriptPath = path.join(projectRoot, "scripts", "build.mjs");
 
 const build = async () => {
-  await import(`${pathToFileURL(buildModule).href}?t=${Date.now()}`);
+  await import(`${pathToFileURL(buildScriptPath).href}?t=${Date.now()}`);
 };
 
 let rebuilding = false;
@@ -35,7 +35,7 @@ const scheduleBuild = () => {
 
 await build();
 
-const server = spawn(process.execPath, [path.join(root, "scripts", "serve.mjs"), "dist"], {
+const server = spawn(process.execPath, [path.join(projectRoot, "scripts", "serve.mjs"), "dist"], {
   stdio: "inherit",
   env: {
     ...process.env,
@@ -44,9 +44,9 @@ const server = spawn(process.execPath, [path.join(root, "scripts", "serve.mjs"),
   },
 });
 
-const watchTargets = [path.join(root, "index.html"), path.join(root, "src")];
+const watchedPaths = [path.join(projectRoot, "index.html"), path.join(projectRoot, "src")];
 
-for (const target of watchTargets) {
+for (const target of watchedPaths) {
   if (!fs.existsSync(target)) {
     continue;
   }

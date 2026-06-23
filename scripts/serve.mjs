@@ -3,11 +3,18 @@ import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
 
-const root = path.resolve(process.argv[2] ?? "dist");
+const outputDir = path.resolve(process.argv[2] ?? "dist");
 const port = Number(process.env.PORT ?? "4173");
 const host = process.env.HOST ?? "0.0.0.0";
+const securityHeaders = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Content-Security-Policy": "default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+};
 
-const mimeTypes = new Map([
+const mimeTypesByExtension = new Map([
   [".html", "text/html; charset=utf-8"],
   [".css", "text/css; charset=utf-8"],
   [".js", "text/javascript; charset=utf-8"],
@@ -22,51 +29,85 @@ const mimeTypes = new Map([
 ]);
 
 function contentType(filePath) {
-  return mimeTypes.get(path.extname(filePath).toLowerCase()) ?? "application/octet-stream";
+  return mimeTypesByExtension.get(path.extname(filePath).toLowerCase()) ?? "application/octet-stream";
 }
 
 function send(res, statusCode, body, headers = {}) {
-  res.writeHead(statusCode, { "Cache-Control": "no-store", ...headers });
+  res.writeHead(statusCode, { ...securityHeaders, "Cache-Control": "no-store", ...headers });
   res.end(body);
 }
 
-const server = http.createServer((req, res) => {
-  const requestUrl = new url.URL(req.url ?? "/", `http://${req.headers.host ?? host}`);
-  let pathname = decodeURIComponent(requestUrl.pathname);
-
-  if (pathname === "/") {
-    pathname = "/index.html";
+function cachePolicy(filePath) {
+  if (path.extname(filePath).toLowerCase() === ".html") {
+    return "no-cache, max-age=0, must-revalidate";
   }
 
-  const filePath = path.join(root, pathname);
-  if (!filePath.startsWith(root)) {
+  if (/\.[a-f0-9]{12}\.[^.]+$/i.test(path.basename(filePath))) {
+    return "public, max-age=31536000, immutable";
+  }
+
+  return "no-cache, max-age=0, must-revalidate";
+}
+
+const server = http.createServer((req, res) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    send(res, 405, "Method not allowed", { Allow: "GET, HEAD" });
+    return;
+  }
+
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new url.URL(req.url ?? "/", "http://localhost").pathname);
+  } catch {
+    send(res, 400, "Bad request");
+    return;
+  }
+
+  if (pathname === "/") pathname = "/index.html";
+
+  const filePath = path.resolve(outputDir, `.${pathname}`);
+  const relativePath = path.relative(outputDir, filePath);
+  if (relativePath === ".." || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath)) {
     send(res, 403, "Forbidden");
     return;
   }
 
   try {
-    const stat = fs.statSync(filePath);
+    let resolvedPath = fs.realpathSync(filePath);
+    const relativeRealPath = path.relative(fs.realpathSync(outputDir), resolvedPath);
+    if (relativeRealPath === ".." || relativeRealPath.startsWith(`..${path.sep}`) || path.isAbsolute(relativeRealPath)) {
+      send(res, 403, "Forbidden");
+      return;
+    }
+
+    let stat = fs.statSync(resolvedPath);
     if (stat.isDirectory()) {
-      const indexPath = path.join(filePath, "index.html");
-      if (fs.existsSync(indexPath)) {
-        send(res, 200, fs.readFileSync(indexPath), { "Content-Type": "text/html; charset=utf-8" });
-        return;
-      }
+      resolvedPath = path.join(resolvedPath, "index.html");
+      stat = fs.statSync(resolvedPath);
+    }
+
+    if (!stat.isFile()) {
       send(res, 404, "Not found");
       return;
     }
 
-    send(res, 200, fs.readFileSync(filePath), { "Content-Type": contentType(filePath) });
-  } catch {
-    const fallback = path.join(root, "index.html");
-    if (fs.existsSync(fallback)) {
-      send(res, 200, fs.readFileSync(fallback), { "Content-Type": "text/html; charset=utf-8" });
+    const headers = {
+      "Content-Type": contentType(resolvedPath),
+      "Content-Length": stat.size,
+      "Cache-Control": cachePolicy(resolvedPath),
+    };
+    res.writeHead(200, { ...securityHeaders, ...headers });
+    if (req.method === "HEAD") res.end();
+    else fs.createReadStream(resolvedPath).pipe(res);
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
+      send(res, 404, "Not found");
       return;
     }
-    send(res, 404, "Not found");
+    send(res, 400, "Bad request");
   }
 });
 
 server.listen(port, host, () => {
-  console.log(`Serving ${root} at http://${host}:${port}`);
+  console.log(`Serving ${outputDir} at http://${host}:${port}`);
 });
